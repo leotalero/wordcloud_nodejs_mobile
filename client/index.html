@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PwC D&A [Town Hall]</title>
+
+    <link rel="shortcut icon" type="image/png" href="/img/pwc-icon.png"/>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/notify.js"></script>
+    <script src="js/jquery.validate.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <style>
+        body { padding-top: 70px; }
+    </style>
+    	<script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      
+      function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+}; 
+      
+    </script>
+    
+    
+	</head>
+
+	<body>
+	    <nav class="navbar navbar-default navbar-fixed-top">
+  	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-bar" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+		  	<a class="navbar-brand" href="/login.html">
+				<img src="/img/pwc-icon.png" width="40">
+			</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="header-bar">
+			<p class="navbar-text">Data & Analytics</p>
+			<ul class="nav navbar-nav" id="header-buttons">
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
+		<div class="container" id="container">
+		    <div class="jumbotron">
+		        <h1>Town Hall</h1>
+		        <h3><label for="staffNumberLabel">Staff: </label><span id="staffNumberLabel" name="staffNumberLabel"></h3>
+		        <h4><label for="name">Nombre: </label><span id="name"></h4>
+            </div>
+
+            <div class="panel panel-default">
+				<div class="panel-body">
+			<div>
+    	 
+    	 <h3><label for="category">Categoria: </label><span id="category" name='category'></h3>
+    	 
+    	 <p class="text-justify" ><span id="texto"></p> 
+      <!--<select class="selectpicker" title='categoria' name="categoryPicker" id="categoryPicker" data-style="btn btn-primary">-->
+      <!--  <option>Categoria 1</option>-->
+      <!--  <option>Categoria 2</option>-->
+      <!--  <option>Categoria 3</option>-->
+      <!--  <option>Categoria 4</option>-->
+      <!--  <option>Categoria 5</option>-->
+      <!--</select>-->
+      </div>
+<form id="formWords" name="formWords">
+    
+    <label for="words1">Palabra: </label><input type="text" name="words1" id="words1" placeholder="estrategia" class="form-control"> <input type="text" name="pq1" id="pq1" placeholder="¿Por que?" class="form-control">
+    <label for="words2">Palabra: </label><input type="text" name="words2" id="words2" placeholder="analisis de informacion" class="form-control"><input type="text" name="pq2" id="pq2" placeholder="¿Por que?" class="form-control">
+    <label for="words3">Palabra: </label><input type="text" name="words3" id="words3" placeholder="imaginación" class="form-control"><input type="text" name="pq3" id="pq3" placeholder="¿Por que?" class="form-control">
+    <label for="words4">Palabra: </label><input type="text" name="words4" id="words4" placeholder="compromiso" class="form-control"><input type="text" name="pq4" id="pq4" placeholder="¿Por que?" class="form-control">
+    <label for="words5">Palabra: </label><input type="text" name="words5" id="words5" placeholder="Ventas" class="form-control"><input type="text" name="pq5" id="pq5" placeholder="¿Por que?" class="form-control">
+    
+    <button id="buttonSend" class="btn btn-primary pull-right" style="margin-top:5px;">Enviar</button>
+</form>    
+					
+					
+					
+					
+				</div>
+			</div>
+		</div>
+  
+  <script>
+  accentsTidy = function(s){
+                        var r=s.toLowerCase();
+                       // r = r.replace(new RegExp("\\s", 'g'),"");
+                        r = r.replace(new RegExp("[àáâãäå]", 'g'),"a");
+                        r = r.replace(new RegExp("æ", 'g'),"ae");
+                        r = r.replace(new RegExp("ç", 'g'),"c");
+                        r = r.replace(new RegExp("[èéêë]", 'g'),"e");
+                        r = r.replace(new RegExp("[ìíîï]", 'g'),"i");
+                        r = r.replace(new RegExp("ñ", 'g'),"n");                            
+                        r = r.replace(new RegExp("[òóôõö]", 'g'),"o");
+                        r = r.replace(new RegExp("œ", 'g'),"oe");
+                        r = r.replace(new RegExp("[ùúûü]", 'g'),"u");
+                        r = r.replace(new RegExp("[ýÿ]", 'g'),"y");
+                       // r = r.replace(new RegExp("\\W", 'g'),"");
+                        return r;
+                };
+                
+    var staffNumberMem = getUrlParameter("staffNumber");
+    
+    $("#staffNumberLabel").html(staffNumberMem);
+    
+    var  Name = getUrlParameter("name");
+    
+    $("#name").html(Name);
+    
+    var categ = getUrlParameter("categoria").trim();
+    $("#category").html(categ);
+    var texto="";
+    
+    
+    if(categ=='Delivery')
+    {
+       texto='¿Qué y cómo entregamos a clientes? \n Discute con tus compañeros sobre las palabras que representen lo que nos ayudará a crecer en esta categoría y escríbelas en el recuadro de abajo '
+      }
+      else if (categ=='Management' ){
+     texto='¿Cómo y qué debería hacer un jefe para facilitar el crecimiento? \n Discute con tus compañeros sobre las palabras que representen lo que nos ayudará a crecer en esta categoría y escríbelas en el recuadro de abajo'
+    }
+      else if(categ=='Market' ){
+        texto='¿Qué deberíamos hacer para llegar al mercado objetivo? \n Discute con tus compañeros sobre las palabras que representen lo que nos ayudará a crecer en esta categoría y escríbelas en el recuadro de abajo '
+      }
+      
+      else if(categ=='Offering' ){
+        texto='¿Qué productos y servicios deberíamos ofrecer? \n Discute con tus compañeros sobre las palabras que representen lo que nos ayudará a crecer en esta categoría y escríbelas en el recuadro de abajo '
+      }
+      
+       
+      else if(categ.trim()=='People' ){
+        texto='¿Qué elementos mejorarían la satisfacción y capacitación del personal? \n Discute con tus compañeros sobre las palabras que representen lo que nos ayudará a crecer en esta categoría y escríbelas en el recuadro de abajo '
+      }
+      $("#texto").html(texto);
+
+    
+      var socket = io.connect();
+      
+      socket.on("error", function(msg){
+        $.notify(msg, "error");
+      });
+      
+      socket.on("resultInsert", function(result){
+        console.log("insert done");
+        $.notify(result, "success");
+         window.location.href = "salida.html";
+      })
+      
+        $("#buttonSend").click(function(evt){
+         $("#formWords").validate({             
+            rules: {
+                      words1:{required:true},
+                      words2:{required:true},
+                      words3:{required:true},
+                      pq1:{required:true},
+                      pq2:{required:true},
+                      pq3:{required:true}
+                      
+            },
+             messages: {
+             
+              words1:"Please enter the word",
+               words2:"Please enter the word",
+               words3:"Please enter the word",
+               pq1:"Please enter explanation",
+               pq2:"Please enter explanation",
+               pq3:"Please enter explanation"
+             },
+            submitHandler: function (form) { // for demo    
+               var array_tot=''
+               var pq_tot=''
+               array_tot=$("#words1").val()+","+$("#words2").val()+","+$("#words3").val()+","+$("#words4").val()+","+$("#words5").val()
+               pq_tot=$("#pq1").val()+","+$("#pq2").val()+","+$("#pq3").val()+","+$("#pq4").val()+","+$("#pq5").val()
+               
+                var array=[]
+                array = array_tot.split(',');
+               
+                var array_pq=[]
+                array_pq = pq_tot.split(',');
+                $.each(array, function (id, val) {
+                  
+                 //array[id] = $.trim(val).toLowerCase();
+                 
+                    
+                         array[id] = accentsTidy($.trim(val))
+                             
+                    
+                });
+                
+                $.each(array_pq, function (id, val) {
+                            
+                                   array_pq[id] =  accentsTidy($.trim(val).toLowerCase())    
+                                      
+                                       
+               });
+                
+                
+                
+                console.log("categoria:"+categ+"words"+array+"pq:"+array_pq)
+                socket.emit("insertwords", { staffNumber : staffNumberMem, words: array, categoria:categ, porque:array_pq}); 
+                    }
+                });
+        
+        
+       
+      });
+      
+      /* global $, io*/
+    </script>
+	</body>
+</html> 
+
+
+

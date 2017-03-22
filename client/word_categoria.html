@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PwC D&A [Town Hall]</title>
+
+    <link rel="shortcut icon" type="image/png" href="/img/pwc-icon.png"/>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/notify.js"></script>
+     <script src="js/moment.js"></script>
+    
+    <script src="js/d3.v3.min.js"></script>
+      <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+ 
+     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css"/>
+ 
+		<script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>
+	
+		
+			
+	
+	
+
+    <style>
+        body { padding-top: 70px; }
+    .wordcloud {
+	   border: solid; 
+    width:100%;
+		background-color: #eeeeee;
+	}
+     </style>
+    
+    
+	</head>
+  
+
+
+	<body>
+	    <nav class="navbar navbar-default navbar-fixed-top">
+  	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-bar" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+		  	<a class="navbar-brand" href="/">
+				<img src="/img/pwc-icon.png" width="40">
+			</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="header-bar">
+		    <p class="navbar-text">Data & Analytics</p>
+		    <a href="./login.html">
+                  	<p class="navbar-text">Login</p>
+            </a>
+			<ul class="nav navbar-nav" id="header-buttons">
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
+		<div class="container" id="container">
+		    <div class="jumbotron">
+		        <h1>Town Hall</h1>
+		        </div>
+
+            <div class="panel panel-default">
+            <select class="selectpicker" name="selValue" id="selValue" data-style="btn-primary" data-width="500px" >
+              <option>Offering</option>
+              <option>Delivery</option>
+              <option selected>People</option>
+              <option>Management</option>
+              <option>Market</option>
+              <option>All</option>
+              </select>
+				<div class="panel-body" id="div_image">
+                    <div id="vis" name="vis" style="text-align:center;"></div>
+                    <vis></vis>
+		 
+					
+					
+					
+					
+					
+				</div>
+				<!--<button id="buttonSend" class="btn btn-primary pull-right" style="margin-top:5px;">Refresh</button>-->
+            
+    
+			</div>
+			
+			<table class="display" cellspacing="0" width="90%" cellspacing="0"  id='table' >
+    <thead>
+        <tr>
+            <th data-field="words">words</th>
+            <th data-field="conteo">count</th>
+            <th data-field="por">Porc%</th>
+            <th data-field="category">Category</th>
+        </tr>
+    
+</table>
+		</div>
+  
+  
+	<script src="/socket.io/socket.io.js"></script>
+       <script>
+      
+   
+    
+     var fill=d3.scale.linear()
+           .domain([90,80,70,50,40,30,10,5,4,3,1])
+            // .range(["#cc0066","#e60073", "#bf4640", "#ff0080", "#ff1a8c", "#ff3399", "#ff4da6", "#ff66b3", "#ff80bf", "#ff99cc", "#ffb3d9"]);
+            .range(["#ffff00", "#ffff00","#ffff00", "#ffff33", "#ffff33", "#ffff33", "#ffff80", "#ffff99", "#ffffb3", "#ffffb3", "#ffffb3"]);
+    
+            
+     var categoria="People"
+     var color='#FF00FF';
+      $('#selValue').change(function () {
+         categoria= $('#selValue option:selected').text();
+         
+          if(categoria=='Delivery')
+        { 
+            fill=''
+           fill=d3.scale.linear()
+            .domain([90,80,70,50,40,30,10,5,4,3,1,0])
+            // .range(["#cc0066","#e60073", "#bf4640", "#ff0080", "#ff1a8c", "#ff3399", "#ff4da6", "#ff66b3", "#ff80bf", "#ff99cc", "#ffb3d9"]);
+            .range(["#67324d", "#67324d","#783a5a", "#783a5a", "#8a4267", "#8a4267", "#8a4267", "#9b4b74", "#9b4b74", "#ac5381", "#ac5381"]);
+     
+          }
+          else if (categoria=='Management' ){
+              
+                fill=''
+              fill=d3.scale.linear()
+            .domain([90,80,70,50,40,30,10,5,4,3,1,0])
+            .range(["#e6005c", "#e6005c","#e6005c", "#ff0066", "#ff1a75", "#ff3385", "#ff4d94", "#ff66a3", "#ff80b3", "#ff80b3", "#ff80b3"]);
+     
+    
+        }
+        
+          else if(categoria=='Market' ){
+              
+                fill=''
+               fill=d3.scale.linear()
+                .domain([90,80,70,50,40,30,10,5,4,3,1,0])
+                .range(["#404040", "#404040","#404040", "#4d4d4d", "#595959", "#666666", "#ff4d94", "#808080", "#8c8c8c", "#999999", "#a6a6a6"]);
+     
+    
+               }
+          
+          else if(categoria=='Offering' ){
+             
+                fill=''
+            fill=d3.scale.linear()
+            .domain([90,80,70,50,40,30,10,5,4,3,1,0])
+            .range(["#cc5200", "#cc5200","#ff6600", "#ff6600", "#ff6600", "#ff6600", "#ff944d", "#ffa366", "#ffb380", "#ffb380", "#ffc299"]);
+     
+              }
+          
+           
+          else if(categoria=='People' ){
+              
+            fill=''
+           fill=d3.scale.linear()
+            .domain([90,80,70,50,40,30,10,5,4,3,1,0])
+            // .range(["#cc0066","#e60073", "#bf4640", "#ff0080", "#ff1a8c", "#ff3399", "#ff4da6", "#ff66b3", "#ff80bf", "#ff99cc", "#ffb3d9"]);
+            .range(["#ffff00", "#ffff1a","#ffff33", "#ffff33", "#ffff4d", "#ffff66", "#ffff80", "#ffff99", "#ffffb3", "#ffffb3", "#ffffb3"]);
+        
+    
+            }
+            else{
+                
+            }
+     });
+
+      var socket = io.connect();
+      var lista=[];
+      var list=[];
+      var result_words;
+      
+      socket.emit("getwordscategoria", { categoria : categoria}); 
+     
+      socket.on("error", function(msg){
+        $.notify(msg, "error");
+      });
+      
+      socket.on("resultwords", function(result){
+        //alert("data devuelta:"+result);
+        
+        
+        var json = JSON.parse(result);
+        var list=[];
+         lista=[];
+        var trHTML = '';
+      words=[];
+      var sum=0;
+      for(var i in json){
+          if(json[i]._id.words==''){
+              
+          }else{
+         sum += json[i].count; 
+          }
+        
+      }
+     
+       for(var i in json)
+              {  if(json[i]._id.words==''){
+              
+          }else{
+                      var b=[]
+                       var id = json[i]._id;
+                       var conteo = (json[i].count);
+                       var por=conteo/sum*100;
+                       b.push(id.words);b.push(conteo);b.push(por.toFixed(1));b.push(json[i]._id.categoria);
+                      list.push(b);
+                      lista.push(b);
+                      
+                    words.push({text: id.words, size:((conteo/sum)*100)*2 +7 });    
+                }
+              }
+              // $('#table tbody').remove();
+              $('#table').DataTable().destroy();
+                $('#table').DataTable( {
+                  data: lista,
+                  columns: [
+                      { title: "Word" },
+                      { title: "Count" },
+                      { title: "Porc%" },
+                      { title: "Category" }
+                  ],
+                  order: [[ 1, "desc" ]],
+                  pageLength: ["100"]
+              } );
+             
+                
+             
+               
+    
+     
+                
+               
+      });
+      
+        
+    socket.on("resultwords_all", function(result){
+        //alert("data devuelta:"+result);
+        
+        
+        var json = JSON.parse(result);
+        var list=[];
+         lista=[];
+        var trHTML = '';
+     words.splice(0);
+      var sum=0;
+      for(var i in json){
+           if(json[i]._id.words==''){
+              
+          }else{
+         sum += json[i].count; 
+          }
+      }
+     
+       for(var i in json)
+       
+              {  if(json[i]._id.words==''){
+              
+          }else{
+                  var b=[]
+                  var id=''
+                   var id = json[i]._id;
+                   var conteo = (json[i].count);
+                   var por=conteo/sum*100;
+                   b.push(id.words);b.push(conteo);b.push(por.toFixed(1));b.push(id.categoria);
+                  list.push(b);
+                  lista.push(b);
+                  if (json[i]._id.categoria=='Delivery'){
+                      color='#7a3b5c';
+                  }else if(json[i]._id.categoria=='Management'){
+                    color='#e6005c';  
+                  }
+                  else if(json[i]._id.categoria=='Market'){
+                      color='#4d4d4d';
+                  }
+                  else if(json[i]._id.categoria=='Offering'){
+                      color='#ff6600'; 
+                  }
+                  else if(json[i]._id.categoria=='People'){
+                      color='#ffff33';
+                  }
+                  
+                words.push({text: id.words+'('+id.categoria+')', size:((conteo/sum)*100)*2 +7 ,color:color});
+              }
+              }
+              // $('#table tbody').remove();
+              $('#table').DataTable().destroy();
+                $('#table').DataTable( {
+                  data: lista,
+                  columns: [
+                      { title: "Word" },
+                      { title: "Count" },
+                      { title: "Porc%" },
+                      { title: "Category" },
+                      
+                  ],
+                  order: [[ 1, "desc" ]],
+                  pageLength: ["100"]
+              } );
+             
+                
+             
+               
+    
+     
+                
+               
+      });
+      
+       
+      /* global $, io*/
+      
+
+ 
+    
+var with_=(document.getElementById("div_image").offsetWidth)/2;
+      
+ 
+//Simple animated example of d3-cloud - https://github.com/jasondavies/d3-cloud
+//Based on https://github.com/jasondavies/d3-cloud/blob/master/examples/simple.html
+ function fillColor(d,i){
+     
+     if(categoria=='All'){
+          return d.color;
+     }else{
+         return fill(i);
+     }
+     
+  }
+// Encapsulate the word cloud functionality
+function wordCloud(selector) {
+
+    //var fill = d3.scale.category20();
+    //var fill=d3.scale.ordinal().range(['#002457', '#999999']);
+    //var fill=d3.scaleSequential(d3.interpolateRainbow);[100,20,15,10,6,5,4,3,2,1]
+    //  fill=d3.scale.linear()
+    //        .domain([100,20,15,10,6,5,4,3,2,1])
+    //        .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+    //Construct the word cloud's SVG element
+    var svg = d3.select(selector).append("svg")
+        .attr({
+              "width": '100%',
+              "height": '500px'
+          })
+        .append("g")
+        .attr("transform", "translate("+with_+",250)");
+        
+
+    //Draw the word cloud
+    function draw(words) {
+         
+        var cloud = svg.selectAll("g text")
+                        .data(words, function(d) { return d.text; })
+
+        //Entering words
+        cloud.enter()
+            .append("text")
+            .style("font-family", "Impact")
+            .style("text-shadow", 2)
+            .style("fill", function(d, i) {
+               
+               
+                 if(categoria=='All'){
+                          return fillColor(d,i);
+                     }else{
+                         return fill(i);
+                     }
+            })
+            .attr("text-anchor", "middle")
+            .attr('font-size', 5)
+            .attr('text-shadow', 2)
+            .text(function(d) { return d.text; });
+
+        //Entering and existing words
+        cloud
+            .transition()
+                .duration(1000)
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("text-shadow", 2)
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .style("fill-opacity", 1);
+
+        //Exiting words
+        cloud.exit()
+            .transition()
+                .duration(1000)
+                .style('fill-opacity', 1e-6)
+                .attr('font-size', 10)
+                .remove();
+    }
+
+
+    //Use the module pattern to encapsulate the visualisation code. We'll
+    // expose only the parts that need to be public.
+    return {
+
+        //Recompute the word cloud for a new set of words. This method will
+        // asycnhronously call draw when the layout has been computed.
+        //The outside world will need to call this function, so make it part
+        // of the wordCloud return value.
+        update: function(words) {
+            d3.layout.cloud().size([550, 550])
+                .words(words)
+                .padding(5)
+                .rotate(function() { return ~~(Math.random() * 1) * 90; })
+                .font("Impact")
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+        }
+    }
+
+}
+
+//Some sample data - http://en.wikiquote.org/wiki/Opening_lines
+var words = [
+    
+]
+
+//Prepare one of the sample sentences by removing punctuation,
+// creating an array of words and computing a random size attribute.
+function getWords(i) {
+    return words[i]
+            .replace(/[!\.:;\?]/g, '')
+            .split(',')
+            .map(function(d,k) {
+                return {text: d, size: 10 + k * 10};
+            })
+}
+
+//This method tells the word cloud to redraw with a new set of words.
+//In reality the new words would probably come from a server request,
+// user input or some other source.
+function showNewWords(vis, i) {
+    i = i || 0;
+
+    //vis.update(getWords(i ++ % words.length))
+    vis.update(words)
+    setTimeout(function() { 
+       
+        socket.emit("getwordscategoria", { categoria : categoria}); 
+        showNewWords(vis, i + 1)
+        
+    }, 4000)
+}
+
+//Create a new instance of the word cloud visualisation.
+var myWordCloud = wordCloud('#vis');
+
+//Start cycling through the demo data
+showNewWords(myWordCloud);
+
+
+document.addEventListener("orientationchange", function(event){
+    switch(window.orientation) 
+    {  
+        case -90: case 90:
+            /* Device is in landscape mode */
+            break; 
+        default:
+            /* Device is in portrait mode */
+    }
+});
+      
+</script>
+   
+	</body>
+</html> 
+
+
+

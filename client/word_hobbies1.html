@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PwC D&A [Town Hall]</title>
+
+    <link rel="shortcut icon" type="image/png" href="/img/pwc-icon.png"/>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/notify.js"></script>
+     <script src="js/moment.js"></script>
+    
+    <script src="js/d3.v3.min.js"></script>
+      <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+ 
+     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css"/>
+ 
+		<script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>
+	
+		
+			
+	
+	
+
+    <style>
+        body { padding-top: 70px; }
+    .wordcloud {
+	   border: solid; 
+    width:100%;
+		background-color: #eeeeee;
+	}
+     </style>
+    
+    
+	</head>
+  
+
+
+	<body>
+	    <nav class="navbar navbar-default navbar-fixed-top">
+  	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-bar" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+		  	<a class="navbar-brand" href="/">
+				<img src="/img/pwc-icon.png" width="40">
+			</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="header-bar">
+		    <p class="navbar-text">Data & Analytics</p>
+		    <a href="./login.html">
+                  	<p class="navbar-text">Login</p>
+            </a>
+			<ul class="nav navbar-nav" id="header-buttons">
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
+		<div class="container" id="container">
+		    <div class="jumbotron">
+		        <h1>Town Hall</h1>
+		        </div>
+
+            <div class="panel panel-default">
+				<div class="panel-body" id="div_image">
+                    <div id="vis" name="vis" style="text-align:center;"></div>
+                    <vis></vis>
+		 
+					
+					
+					
+					
+				</div>
+				<!--<button id="buttonSend" class="btn btn-primary pull-right" style="margin-top:5px;">Refresh</button>-->
+            
+    
+			</div>
+			
+			<table class="display" cellspacing="0" width="90%" cellspacing="0"  id='table' >
+    <thead>
+        <tr>
+            <th data-field="words">words</th>
+            <th data-field="conteo">count</th>
+            <th data-field="por">Porc%</th>
+        </tr>
+    
+</table>
+		</div>
+  
+  
+	<script src="/socket.io/socket.io.js"></script>
+       <script>
+    
+      var socket = io.connect();
+      
+
+      var socket = io.connect();
+      var lista=[];
+      var list=[];
+      var result_words;
+      
+      socket.emit("getwordshobbies"); 
+     
+      socket.on("error", function(msg){
+        $.notify(msg, "error");
+      });
+      
+      socket.on("resultwordshobbies", function(result){
+        //alert("data devuelta:"+result);
+        
+        var json = JSON.parse(result);
+        var list=[];
+         lista=[];
+        var trHTML = '';
+      words=[];
+      var sum=0;
+      for(var i in json){
+         sum += json[i].count; 
+        
+      }
+     
+       for(var i in json)
+              { var b=[]
+                   var id = json[i]._id;
+                   var conteo = (json[i].count);
+                   var por=conteo/sum*100;
+                   b.push(id);b.push(conteo);b.push(por.toFixed(2));
+                  list.push(b);
+                  lista.push(b);
+                  
+                words.push({text: id, size:((conteo/sum)*100)*2 +7 });
+              }
+              // $('#table tbody').remove();
+              $('#table').DataTable().destroy();
+                $('#table').DataTable( {
+                  data: lista,
+                  columns: [
+                      { title: "Word" },
+                      { title: "Count" },
+                      { title: "Porc%" }
+                      
+                  ],
+                  order: [[ 1, "desc" ]],
+                  pageLength: ["50"]
+              } );
+             
+                
+             
+               
+    
+     
+                
+               
+      });
+      
+        
+       
+       
+      /* global $, io*/
+      
+	// For demo to fit into DataTables site builder...
+     $(document).ready(function() {
+       
+       
+     });
+ 
+    </script>
+      
+    <script>
+var with_=(document.getElementById("div_image").offsetWidth)/2;
+      
+ socket.emit("getwordshobbies"); 
+//Simple animated example of d3-cloud - https://github.com/jasondavies/d3-cloud
+//Based on https://github.com/jasondavies/d3-cloud/blob/master/examples/simple.html
+
+// Encapsulate the word cloud functionality
+function wordCloud(selector) {
+
+    var fill = d3.scale.category20();
+
+    //Construct the word cloud's SVG element
+    var svg = d3.select(selector).append("svg")
+        .attr({
+              "width": '100%',
+              "height": '500px'
+          })
+        .append("g")
+        .attr("transform", "translate("+with_+",250)");
+        
+
+    //Draw the word cloud
+    function draw(words) {
+        var cloud = svg.selectAll("g text")
+                        .data(words, function(d) { return d.text; })
+
+        //Entering words
+        cloud.enter()
+            .append("text")
+            .style("font-family", "Impact")
+            .style("fill", function(d, i) { return fill(i); })
+            .attr("text-anchor", "middle")
+            .attr('font-size', 5)
+            .text(function(d) { return d.text; });
+
+        //Entering and existing words
+        cloud
+            .transition()
+                .duration(3000)
+                .style("font-size", function(d) { return d.size + "px"; })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .style("fill-opacity", 1);
+
+        //Exiting words
+        cloud.exit()
+            .transition()
+                .duration(2000)
+                .style('fill-opacity', 1e-6)
+                .attr('font-size', 10)
+                .remove();
+    }
+
+
+    //Use the module pattern to encapsulate the visualisation code. We'll
+    // expose only the parts that need to be public.
+    return {
+
+        //Recompute the word cloud for a new set of words. This method will
+        // asycnhronously call draw when the layout has been computed.
+        //The outside world will need to call this function, so make it part
+        // of the wordCloud return value.
+        update: function(words) {
+            d3.layout.cloud().size([500, 500])
+                .words(words)
+                .padding(5)
+                .rotate(function() { return ~~(Math.random() * 1) * 90; })
+                .font("Impact")
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+        }
+    }
+
+}
+
+//Some sample data - http://en.wikiquote.org/wiki/Opening_lines
+var words = [
+    
+]
+
+//Prepare one of the sample sentences by removing punctuation,
+// creating an array of words and computing a random size attribute.
+function getWords(i) {
+    return words[i]
+            .replace(/[!\.:;\?]/g, '')
+            .split(',')
+            .map(function(d,k) {
+                return {text: d, size: 10 + k * 10};
+            })
+}
+
+//This method tells the word cloud to redraw with a new set of words.
+//In reality the new words would probably come from a server request,
+// user input or some other source.
+function showNewWords(vis, i) {
+    i = i || 0;
+
+    //vis.update(getWords(i ++ % words.length))
+    vis.update(words)
+    setTimeout(function() { 
+         socket.emit("getwordshobbies"); 
+        showNewWords(vis, i + 1)
+        
+    }, 5000)
+}
+
+//Create a new instance of the word cloud visualisation.
+var myWordCloud = wordCloud('#vis');
+
+//Start cycling through the demo data
+showNewWords(myWordCloud);
+
+
+document.addEventListener("orientationchange", function(event){
+    switch(window.orientation) 
+    {  
+        case -90: case 90:
+            /* Device is in landscape mode */
+            break; 
+        default:
+            /* Device is in portrait mode */
+    }
+});
+      
+</script>
+   
+	</body>
+</html> 
+
+
+

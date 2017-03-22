@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PwC D&A [Town Hall]</title>
+
+    <link rel="shortcut icon" type="image/png" href="/img/pwc-icon.png"/>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/notify.js"></script>
+     <script src="js/moment.js"></script>
+    <script src="js/wordcloud2.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+ 
+ <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css"/>
+ 
+		<script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>
+	
+		
+			
+	
+	
+
+    <style>
+        body { padding-top: 70px; }
+    .wordcloud {
+	   border: solid; 
+    width:100%;
+		background-color: #eeeeee;
+	}
+     </style>
+    
+    
+	</head>
+
+	<body>
+	    <nav class="navbar navbar-default navbar-fixed-top">
+  	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-bar" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+		  	<a class="navbar-brand" href="/">
+				<img src="/img/pwc-icon.png" width="40">
+			</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="header-bar">
+			<p class="navbar-text">Data & Analytics</p>
+			<ul class="nav navbar-nav" id="header-buttons">
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
+		<div class="container" id="container">
+		    <div class="jumbotron">
+		        <h1>Town Hall</h1>
+		        </div>
+
+            <div class="panel panel-default">
+				<div class="panel-body">
+                    <canvas id="my_canvas" name="my_canvas" class="wordcloud">
+                      
+                    </canvas>
+                    
+		 
+					
+					
+					
+					
+				</div>
+				<button id="buttonSend" class="btn btn-primary pull-right" style="margin-top:5px;">refresh</button>
+    
+			</div>
+			
+			<table class="display" cellspacing="0" width="90%" cellspacing="0"  id='table' >
+    <thead>
+        <tr>
+            <th data-field="words">words</th>
+            <th data-field="count" data-defaultsort="desc">count</th>
+           
+        </tr>
+    
+</table>
+		</div>
+  
+  <script>
+   
+  </script>
+	<script src="/socket.io/socket.io.js"></script>
+       <script>
+    
+      var socket = io.connect();
+      var lista=[];
+      var list=[];
+      var result_words;
+      
+      
+     
+      socket.on("error", function(msg){
+        $.notify(msg, "error");
+      });
+      
+      socket.on("resultwordshobbies", function(result){
+        //alert("data devuelta:"+result);
+        
+        var json = JSON.parse(result);
+        var list=[];
+         lista=[];
+        var trHTML = '';
+      
+       for(var i in json)
+              { var b=[]
+                   var id = json[i]._id;
+                   var conteo = json[i].count;
+                   b.push(id);b.push(conteo);
+                  list.push(b);
+                  lista.push(b);
+                  trHTML += '<tr><td>' + id+ '</td><td>' + conteo + '</td></tr>'
+               
+              }
+              // $('#table tbody').remove();
+              $('#table').DataTable().destroy();
+                $('#table').DataTable( {
+                  data: lista,
+                  columns: [
+                      { title: "Word" },
+                      { title: "Count" }
+                      
+                  ],
+                  order: [[ 1, "desc" ]]
+              } );
+             
+                
+              WordCloud(document.getElementById('my_canvas'),
+                { list: list },
+                {backgroundColor:'#F5D0A9'}     
+                );
+            	
+               
+    
+     
+                
+               
+      });
+      
+      
+      $("#buttonSend").click(function(evt){
+          
+                socket.emit("getwordshobbies"); 
+                    
+         });
+        
+             
+        
+       
+       
+      /* global $, io*/
+      
+	// For demo to fit into DataTables site builder...
+     $(document).ready(function() {
+       
+       
+     });
+ 
+    </script>
+      
+    
+   
+	</body>
+</html> 
+
+
+
